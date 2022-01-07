@@ -1,0 +1,17 @@
+image:
+  file: .gitpod.Dockerfile
+ports:
+  - port: 8001
+    onOpen: open-preview
+  - port: 3306
+    onOpen: ignore
+tasks:
+  - init: >
+      mkdir -p /workspace/wp_test/public &&
+      cd /workspace/wp_test/public &&
+      wp core download --locale=ja --path=/workspace/wp_test/public &&
+      wp core config --dbname=wp_sample --dbuser=root --dbpass='' --dbhost=localhost --dbprefix=wp_ &&
+      wp db create &&
+      wp core install --url=$(gp url 8001) --title=SiteTitle --admin_user=admin --admin_password=password --admin_email=my@email.com
+    command: apachectl start
+  - command: gp await-port 8001 && gp preview $(gp url 8001)
